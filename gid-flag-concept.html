@@ -1,0 +1,247 @@
+<!--
+  Wrapper component for flagging concepts
+-->
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../gid-api/gid-api.html">
+<!--
+## gid-flag-concept
+
+A data component for flagging concepts
+
+	<gid-flag-concept api-url ="<your-api-url>" api-token = "<your-api-token>"
+    user="<your-user-id>" column-id="<column-id>" lob-id="<lob-id>" response = {{response}}>
+    </gid-flag-concept>
+    
+ - The column id is to be specified in the 'column-id' field
+ - The lob id is to be specified in the 'lob-id' field
+ - The user id needs to be provided in 'user' parameter.
+ - The 'api-url' needs to be provided to specify the rest end point.
+ - The 'api-token' would contain the access token to access the mentioned rest end point.
+ - The 'response' property would return the response.
+ 
+ API endpoint:
+ - POST /columnId="column-id"&lobId="lob-id"
+    
+Input:
+ - User Id*
+ - Column Id*
+ - Lob Id*
+
+Sample Input: (Query params)
+ - POST /columnId="column-id"&lobId="lob-id"
+ 
+Output:
+- Example columns
+	{
+	  "request": {
+	    "id": "7758",
+	    "status": "Pending for review",
+	    "timestamp": 1123123133
+	  }
+	}
+
+The output of this components will be as follows:
+
+	    
+If 'apiUrl' is not provided, then the component would fetch sample data from mock json.
+
+Note: The inputs marked with '*' are mandatory inputs.
+
+@demo demo/index.html
+-->
+<dom-module id="gid-flag-concept">
+  <template>
+          
+         <!-- fetch entity path  -->
+        	<gid-api entity = '{{_apiEntity}}' path-key= '{{_pathKey}}' path='{{_path}}'></gid-api>
+         <!--  fetch entity path -->
+        
+         <!-- fetch nearby columns -->	
+			<gid-api auto=false
+			method="POST" api-url={{_flagConceptUrl}} response='{{flagConceptResponse}}'
+			error = '{{flagConceptError}}'
+			api-params={{_flagConceptParams}} api-token={{_flagConceptToken}}
+			api-timeout={{_flagConceptTimeout}}> </gid-api>			
+	     <!-- fetch nearby columns -->	
+       
+
+  </template>
+  <script>
+    (function() {
+     'use strict';
+      Polymer({
+        is:'gid-flag-concept',
+        properties:{
+	        	/*User Id*/
+	 	       	user: {
+	 	        	type: String,
+	 	        	value : '',
+	 	        	notify :  true
+	 	        },
+	 	        /*Column Id*/
+	 	       	columnId:{
+	 	    	  type: String,
+	   	          value : '',
+	   	          notify :  true
+	 	        },
+	 	        /*Lob Id*/
+	 	       	lobId:{
+	 	    	  type: String,
+	   	          value : '',
+	   	          notify :  true
+	 	        },
+        	  /*Array listing the parameters*/
+        	  _paramsArr: {
+	           	   type: Array,
+	           	   notify: true,
+	           	   value: ["columnId", "lobId"]
+              },
+	           /*Authorization token for accessing rest api*/
+	        	apiToken: {
+	            	type: String,
+	                notify: true,
+	                value : ''
+	            },
+	            /*Base url*/
+	        	apiUrl:{
+	            	type: String,
+	    	        notify: true,
+	    	        value: ''
+	    	 	},
+	    	   /*Url*/
+        	   _flagConceptUrl:{
+                	type: String,
+        	        notify: true
+        	 	},
+        	 	/*Params*/
+     	   	    _flagConceptParams : {
+     	   	    	type: String,
+     	   	    	notify: true
+     	   	    },
+     	   		/*Timeout*/
+        	 	_flagConceptTimeout : {
+            		type: Number,
+        	        notify: true,
+        	        value : 0
+        	    },
+     	   	    /*Token*/
+     	   	    _flagConceptToken : {
+     	   	    	type: String,
+     	   	    	notify: true
+     	   	    },
+     	   		/*Response sent to gid-api. This is a private property*/
+        	    flagConceptResponse : {
+	     	  		type : Object,
+	     	  		notify : true,
+	     	  		observer : '_flagConceptResponseReceived'
+        	  	},
+        	  	/*Error sent to gid-api. This is a private property*/
+        	  	flagConceptError : {
+	     	  		type : Object,
+	     	  		notify : true,
+	     	  		observer : '_flagConceptErrorReceived'
+        	  	},
+     	        /*Response object*/
+     	        response: {
+     	        	type: Array,
+       	         	value: [],
+       	          	notify: true
+     	        },
+     	        /*The api path key*/
+	            _pathKey: {
+	            	type: String,
+	                notify: true,
+	                value: ''
+	            },
+	            /*The api path*/
+                _path: {
+               	   type: String,
+                   notify: true,
+                   value: '',
+                   observer: '_pathReceived'
+                },
+                /*Api entity sent to gid-api*/
+                _apiEntity: {
+               	   type: String,
+                   notify: true
+                },
+                /*Trigger to flag as concept*/
+                flagConcept: {
+            	  type: Boolean,
+         		  notify: true,
+         		  value: false,
+         		  observer: '_flagConceptObserver'
+                }
+        },
+        
+        /* Success response handler */
+        _flagConceptResponseReceived : function(newvalue, oldvalue){
+		  this._reset();
+	          if(newvalue != null){
+		             this.async(function() {
+		         		this.response =  newvalue;
+		   		 	          }, 500);
+	          }
+         	
+         },
+         /* Error response handler */
+         _flagConceptErrorReceived :  function(newvalue, oldvalue){
+   		  	 this._reset();
+	        	if(newvalue !== null){
+	        		this.async(function() {
+		         		this.response =  newvalue.response;
+		   		 	          }, 500);
+	        	}
+	     },
+	     /* Reset method */
+		 _reset: function(){
+			this.response = [];
+			this._apiEntity = '';
+            this._path = '';
+			this.flagConcept = false;
+		 },
+		 /* Observer of 'create' flag */
+         _flagConceptObserver: function () {
+        	 if (this.flagConcept) {
+        	 	if (!this.apiUrl) {
+// 	      			this._flagConceptUrl = this.import_path + 'assets/json/flag-concept.json';
+// 	                this._flagConceptTimeout =  this._flagConceptTimeout - 1;
+      			}
+        		else {
+        			this._pathKey =  'default';
+         			this._apiEntity = 'FLAG-CONCEPT';
+         		}
+         	}
+				
+         },
+         /* Observer for api path */
+         _pathReceived: function(){
+         	if(this._path){
+         		var res = this._path.split(/{([^}]+)}/);
+        		for (var i in res) {
+        			if(!res[i].startsWith("/")){
+        					if(this[res[i]]){
+        						res[i] = this[res[i]];
+        					}
+        			}
+        		}
+       			this._flagConceptUrl = this.apiUrl + res.join("");
+       			var paramsObj = {};
+       			for (var i in this._paramsArr){
+                	if(this[this._paramsArr[i]]){
+                		paramsObj[this._paramsArr[i]]= this[this._paramsArr[i]];
+                		}
+
+                }
+       			this._flagConceptParams = JSON.stringify(paramsObj);
+       			if(this.apiToken){
+       				this._flagConceptToken =  this.apiToken;
+       			}
+       			this._flagConceptTimeout =  this._flagConceptTimeout - 1;
+         		
+         	}
+         }
+      });
+    })();
+  </script>
+</dom-module>
