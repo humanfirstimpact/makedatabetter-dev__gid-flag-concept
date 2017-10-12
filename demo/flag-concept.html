@@ -2,7 +2,9 @@
 <link rel="import" href="../../paper-input/paper-input.html">
 <link rel="import" href="../../paper-button/paper-button.html">
 
+
 <script src="../../jquery/dist/jquery.min.js"></script>
+
 
 <dom-module id="flag-concept">
   <template>
@@ -29,6 +31,7 @@
 			    color: white;
 			}
 		    paper-button.green[active] {
+		    	margin-top: 5px;
 		        background-color: var(--paper-red-500);
 		    }
 		    paper-dropdown-menu, paper-listbox {
@@ -39,17 +42,22 @@
 		    display: block;
 		  }
   		</style>
-  		<h1>Faceted Search</h1>
   		
-  		<paper-input label="Api Url" value={{apiUrl}} id="apiUrl"></paper-input>
-  		<paper-input label="Api Token" value={{apiToken}} id="apiToken"></paper-input>
-  		<paper-input label="Column Id" value={{columnId}} id="columnId"></paper-input>
-  		<paper-input label="Lob Id" value={{lobId}} id="lobId"></paper-input>
-  		
-  		<paper-button raised class="green" on-click="_submit">Submit</paper-button>
-  		
-  		
-		
+  		<div id="mdbLogin">
+			<div class="container">
+		      <div class="login_frame">
+		        <div class="form-wrapper w-form">
+		          <form class="form-2" data-name="Email Form" name="email-form">
+		            <paper-input  label="Api Url" value={{apiUrl}} id="apiUrl"></paper-input>
+			  		<paper-input  label="Api Token" value={{apiToken}} id="apiToken"></paper-input>
+			  		<paper-input  label="Column Id" value={{columnId}} id="columnId"></paper-input>
+			  		<paper-input  label="Lob Id" value={{lobId}} id="lobId"></paper-input>
+		            <paper-button raised class="form w-button green" on-click="_submit">Submit</paper-button>
+		          </form>
+		        </div>
+		      </div>
+		    </div>
+	    </div>
   		
        <gid-flag-concept user='1'
        api-url={{apiUrl}}
@@ -58,10 +66,21 @@
        </gid-flag-concept>
         
         <template is="dom-if" if="[[_isResponseReceived]]">
-         	<h1>Flag Concept Result</h1>
-	        <p>Id: {{response.request.id}}</p>
-	        <p>Status: {{response.request.status}}</p>
-	        <p>Timestamp: {{response.request.timestamp}}</p>
+         	<p></p>
+	        <div class="horizontal-section">
+                <table align="center" style="width:70%">
+				  <tr>
+				    <th>Id</th>
+				    <th>Status</th>
+				    <th>Timestamp</th>
+				  </tr>
+				  <tr>
+				    <td valign="top">{{response.request.id}}</td>
+				    <td valign="top">{{response.request.status}}</td>
+				    <td valign="top">{{response.request.timestamp}}</td>
+				  </tr>
+				</table>
+            </div>
     </template>
     <template is="dom-if" if="![[_isResponseReceived]]">
             <p>{{response.0.userMessage}}</p>
