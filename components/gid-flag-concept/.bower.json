@@ -25,11 +25,11 @@
     "paper-button": "^1.0.0"
   },
   "homepage": "https://github.com/makedatabetter-dev/gid-flag-concept",
-  "_release": "c0136181f1",
+  "_release": "2195e0d9e6",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "c0136181f11b0fe462073fe93e5269380aa74d7d"
+    "commit": "2195e0d9e63d03c4ba2e9671d14b779bf8e1059e"
   },
   "_source": "https://github.com/makedatabetter-dev/gid-flag-concept.git",
   "_target": "*",
